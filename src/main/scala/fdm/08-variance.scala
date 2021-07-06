@@ -22,7 +22,7 @@ object subtyping {
    * Determine the relationship between `Animal` and `Dog`, and encode that using either
    * `IsSubtypeOf` or `IsSupertypeOf`.
    */
-  type Exercise1 = TODO
+  type Exercise1 = IsSupertypeOf[Animal, Dog]
 
   /**
    * EXERCISE 2
@@ -30,7 +30,7 @@ object subtyping {
    * Determine the relationship between `Dog` and `Animal` (in that order), and encode that using
    * either `IsSubtypeOf` or `IsSupertypeOf`.
    */
-  type Exercise2 = TODO
+  type Exercise2 = IsSubtypeOf[Dog, Animal]
 
   /**
    * EXERCISE 3
@@ -38,7 +38,7 @@ object subtyping {
    * Determine the relationship between `Animal` and `Cat`, and encode that using either
    * `IsSubtypeOf` or `IsSupertypeOf`.
    */
-  type Exercise3 = TODO
+  type Exercise3 = Animal IsSupertypeOf Cat
 
   /**
    * EXERCISE 4
@@ -46,7 +46,9 @@ object subtyping {
    * Determine the relationship between `Cat` and `Animal` (in that order), and encode that using
    * either `IsSubtypeOf` or `IsSupertypeOf`.
    */
-  type Exercise4 = TODO
+  type Exercise4   = Cat IsSubtypeOf Animal
+  type NothingType = Nothing IsSubtypeOf Animal
+  type AnyType     = Any IsSupertypeOf Animal
 
   /**
    * EXERCISE 5
@@ -58,7 +60,7 @@ object subtyping {
    * In this exercise, use the right type operator such that the examples that should compile do
    * compile, but the examples that should not compile do not compile.
    */
-  def isInstanceOf[A, B](a: A): Unit = ???
+  def isInstanceOf[A, B >: A](a: A): Unit = ???
 
   lazy val mustCompile1    = isInstanceOf[Ripley.type, Dog](Ripley)
   lazy val mustCompile2    = isInstanceOf[Midnight.type, Cat](Midnight)
@@ -71,7 +73,7 @@ object subtyping {
    * The following data type imposes no restriction on the guests who stay at the hotel. Using
    * the subtyping or supertyping operators, ensure that only animals may stay at the hotel.
    */
-  final case class PetHotel[A](rooms: List[A])
+  final case class PetHotel[A <: Animal](rooms: List[A])
 }
 
 /**
@@ -285,7 +287,7 @@ object advanced_variance {
    * Given that a workflow is designed to consume some input, and either error or produce an
    * output value, choose the appropriate variance for the workflow type parameters.
    */
-  final case class Workflow[Input, Error, Output](run: Input => Either[Error, Output]) {
+  final case class Workflow[-Input, +Error, +Output](run: Input => Either[Error, Output]) {
     def map[NewOutput](f: Output => NewOutput): Workflow[Input, Error, NewOutput] = Workflow(i => run(i).map(f))
 
     /**
@@ -302,6 +304,8 @@ object advanced_variance {
      * Add the appropriate variance annotations to the following method, and see if you can
      * implement it by following its types.
      */
-    // def fallback(that: Workflow[Input, Error, Output]): Workflow[Input, Error, Output] = ???
+    def fallback[Input1 <: Input, Error1 >: Error, Output1 >: Output](
+      that: Workflow[Input1, Error1, Output1]
+    ): Workflow[Input, Error, Output] = ???
   }
 }

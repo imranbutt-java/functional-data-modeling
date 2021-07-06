@@ -11,11 +11,11 @@ object phantom_types {
    */
   type Created
   type Connected
-  trait Socket
+  trait Socket[State]
 
-  def createSocket(): Socket                                 = ???
-  def connectSocket(address: String, socket: Socket): Socket = ???
-  def readSocket(socket: Socket): Array[Byte]                = ???
+  def createSocket(): Socket[Created]                                            = ???
+  def connectSocket(address: String, socket: Socket[Created]): Socket[Connected] = ???
+  def readSocket(socket: Socket[Connected]): Array[Byte]                         = ???
 
   /**
    * EXERCISE 2
@@ -52,15 +52,28 @@ object phantom_types {
    * Note: As before, you must make the constructors of the data type with a phantom type parameter
    * private, so they cannot be called from outside code.
    */
-  type SetAge
-  type SetName
-  case class PersonBuilder(age: Option[Int], name: Option[String]) {
-    def age(v: Int): PersonBuilder = copy(age = Some(v))
+  type Age
+  type Name
+  type Addresses
+  final case class PersonBuilder[+Set] private (
+    age: Option[Int],
+    name: Option[String],
+    addresses: Option[List[String]]
+  ) {
+    def addresses(list: List[String]): PersonBuilder[Set with Addresses] = copy(addresses = Some(list))
 
-    def name(s: String): PersonBuilder = copy(name = Some(s))
+    def age(v: Int): PersonBuilder[Set with Age] = copy(age = Some(v))
+
+    def name(s: String): PersonBuilder[Set with Name] = copy(name = Some(s))
+
+    def build(implicit ev: Set <:< Name with Age): Person = Person(name.get, age.get, addresses.getOrElse(Nil))
   }
-  final case class Person(name: String, age: Int)
+  object PersonBuilder {
+    val builder: PersonBuilder[Any] = PersonBuilder(None, None, None)
+  }
+  import PersonBuilder._
 
-  def build(personBuilder: PersonBuilder): Person =
-    Person(personBuilder.name.get, personBuilder.age.get)
+  final case class Person(name: String, age: Int, addresses: List[String])
+
+  builder.age(32).name("John Smith").build
 }

@@ -20,7 +20,9 @@ object gadts {
    */
   sealed trait ConversionType[A]
   object ConversionType {
-    case object ToInt extends ConversionType[Int]
+    case object ToInt     extends ConversionType[Int]
+    case object ToLong    extends ConversionType[Long]
+    case object ToBoolean extends ConversionType[Boolean]
   }
 
   /**
@@ -33,7 +35,12 @@ object gadts {
    * the `convert` function.
    */
   def convert[A](string: String, conversionType: ConversionType[A]): A =
-    ???
+    conversionType match {
+      case ConversionType.ToInt     => string.toInt
+      case ConversionType.ToLong    => string.toLong
+      case ConversionType.ToBoolean => string.toBoolean
+    }
+  convert("123", ConversionType.ToLong)
 
   /**
    * EXERCISE 3

@@ -26,7 +26,7 @@ object eithers {
    * Using both a type alias, and Scala's `Either` type, construct a type called `IntOrString` that
    * can either hold an `Int` or a `String`.
    */
-  type IntOrString = TODO
+  type IntOrString = Either[Int, String]
 
   /**
    * EXERCISE 2
@@ -34,7 +34,7 @@ object eithers {
    * Construct a value of type `IntOrString` that contains the string "Sherlock", using the
    * `Right(_)` constructor for `Either`.
    */
-  lazy val intOrString: IntOrString = TODO
+  lazy val intOrString: IntOrString = Right("Hi")
 
   /**
    * EXERCISE 3
@@ -42,7 +42,7 @@ object eithers {
    * Using both a type alias, and Scala's `Either` type, construct a type called
    * `PaymentMethod` that can be either `CreditCard` or `WireTransfer`.
    */
-  type PaymentMethod = TODO
+  type PaymentMethod = Either[CreditCard, WireTransfer]
 
   final case class CreditCard()
   final case class WireTransfer()
@@ -53,7 +53,7 @@ object eithers {
    * Construct a value of type `PaymentMethod` that contains a value of type `CreditCard`, using the
    * `Left(_)` constructor for `Either`.
    */
-  lazy val paymentMethod: PaymentMethod = TODO
+  lazy val paymentMethod: PaymentMethod = Left(CreditCard())
 }
 
 /**
@@ -84,7 +84,12 @@ object enum_basics {
    */
   sealed trait ChessPieceType
   object ChessPieceType {
-    case object Pawn extends ChessPieceType
+    case object Pawn   extends ChessPieceType
+    case object knight extends ChessPieceType
+    case object bishop extends ChessPieceType
+    case object rook   extends ChessPieceType
+    case object king   extends ChessPieceType
+    case object queen  extends ChessPieceType
   }
 
   /**
@@ -103,7 +108,9 @@ object enum_basics {
    */
   sealed trait Currency
   object Currency {
-    final case class USD(dollars: Int, cents: Int) extends Currency
+    final case class USD(dollars: Int, cents: Int)  extends Currency
+    final case class EURO(euros: Int, cents: Int)   extends Currency
+    final case class Other(amount: Int, cents: Int) extends Currency
   }
 
   /**
@@ -112,7 +119,7 @@ object enum_basics {
    * Using the enum that you created, construct a value of type `Currency` that holds 9 dollars and
    * 9 cents of USD.
    */
-  lazy val currency: Currency = TODO
+  lazy val currency: Currency = Currency.USD(9, 9)
 }
 
 /**
